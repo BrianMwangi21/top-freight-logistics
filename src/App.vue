@@ -1,121 +1,94 @@
 <template>
-  <div id="app">
-    <GmapMap
-      :center="center"
-      :zoom="15"
-      map-style-id="roadmap"
-      :options="mapOptions"
-      style="width: 100vmax; height: 80vmin"
-      ref="mapRef"
-      @click="handleMapClick"
+  <v-app id="inspire">
+    <v-app-bar
+      app
+      color="white"
+      flat
     >
-      <gmap-info-window 
-        @closeclick="info_window_open=false" 
-        :opened="info_window_open" 
-        :position="infowindow"
-        :options="{
-          pixelOffset: {
-            width: 0,
-            height: -50
-          }
-        }"
-      >
-            Hello world!
-      </gmap-info-window>
-      <GmapMarker
-        :position="marker.position"
-        :clickable="true"
-        :draggable="false"
-        @click="openInfoWindow"
-        icon='https://images.sendyit.com/web_platform/vendor_type/top/25_freight.png'
-      />
-    </GmapMap>
-  <button @click="simulateDriverMovement">Simulate Driver Movement</button>
+      <v-container class="py-0 fill-height">
+        <v-avatar
+          class="mr-10"
+          color="grey darken-1"
+          size="32"
+        ></v-avatar>
 
-  <p>Current Marker Position: {{ marker.position }}</p>
-  </div>
+        <v-btn
+          v-for="link in links"
+          :key="link"
+          text
+        >
+          {{ link }}
+        </v-btn>
+      </v-container>
+    </v-app-bar>
+
+    <v-main class="grey lighten-3">
+      <v-container>
+        <v-row>
+          <v-col cols="2">
+            <v-sheet rounded="lg">
+              <v-list color="transparent">
+                <v-list-item
+                  link
+                  @click="simulateDriverA"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      Simulate Driver A
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+
+                <v-divider class="my-2"></v-divider>
+
+                <v-list-item
+                  link
+                  color="grey lighten-4"
+                  @click="refreshSimulation"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      Refresh
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-sheet>
+          </v-col>
+
+          <v-col>
+            <Home ref="homeRef" />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
+import Home from './components/Home.vue'
+
 export default {
-  name: 'App',
   components: {
+    Home
   },
+
   data() {
     return {
-      marker: { position: {} },
-      center: {},
-      infowindow: {},
-      mapOptions: {
-        disableDefaultUI: true,
-      },
-      driverA_coords: [
-        { lat: -1.298982, lng: 36.776811 },
-        { lat: -1.297459, lng: 36.776747 },
-        { lat: -1.296193, lng: 36.776726 },
-        { lat: -1.296097, lng: 36.779236 },
-        { lat: -1.296151, lng: 36.777637 },
-        { lat: -1.296215, lng: 36.776693 },
-        { lat: -1.294252, lng: 36.776586 },
-        { lat: -1.294048, lng: 36.776790 },
-        { lat: -1.293973, lng: 36.779118 },
-        { lat: -1.292622, lng: 36.779075 },
-        { lat: -1.291844, lng: 36.779049 }
+      links: [
+        'Dashboard'
       ],
-      info_marker: null,
-      info_window_open: true
-    };
-  },
-  methods: {
-    //detects location from browser
-    geolocate() {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.marker.position = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        this.center = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        },
-        this.infowindow = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        }
-
-        this.panToMarker();
-      });
-    },
-
-    //sets the position of marker when dragged
-    handleMarkerDrag(e) {
-      console.log(e);
-      // this.marker.position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-    },
-
-    //Moves the map view port to marker
-    panToMarker() {
-      this.$refs.mapRef.panTo(this.marker.position);
-      this.$refs.mapRef.setZoom(15);
-    },
-
-    //Moves the marker to click position on the map
-    handleMapClick(e) {
-      console.log(e);
-      // this.marker.position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-    },
-
-    // control the info-window
-    openInfoWindow() {
-      this.info_window_open = !this.info_window_open;
-    },
-
-    simulateDriverMovement() {
-      
     }
   },
-  mounted() {
-    this.geolocate();
-  },
+
+  methods: {
+    simulateDriverA() {
+      this.$refs.homeRef.simulateDriverA();
+    },
+
+    refreshSimulation() {
+      this.$refs.homeRef.refreshSimulation();
+    }
+  }
 }
 </script>
