@@ -26,13 +26,13 @@
         :position="marker.position"
         :clickable="true"
         :draggable="false"
-        @click="openWindow"
+        @click="openInfoWindow"
         icon='https://images.sendyit.com/web_platform/vendor_type/top/25_freight.png'
       />
     </GmapMap>
-  <button @click="geolocate">Detect Location</button>
+  <button @click="simulateDriverMovement">Simulate Driver Movement</button>
 
-  <p>Selected Position: {{ marker.position }}</p>
+  <p>Current Marker Position: {{ marker.position }}</p>
   </div>
 </template>
 
@@ -106,8 +106,12 @@ export default {
     },
 
     // control the info-window
-    openWindow() {
-      this.info_window_open = true;
+    openInfoWindow() {
+      this.info_window_open = !this.info_window_open;
+    },
+
+    simulateDriverMovement() {
+      
     }
   },
   mounted() {
