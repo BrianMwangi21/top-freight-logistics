@@ -20,7 +20,13 @@
           }
         }"
       >
-        <custom-info-window />
+        <custom-info-window
+          :vehicle_numberplate="vehicle_numberplate"
+          :vehicle_tonnes="vehicle_tonnes"
+          :vehicle_type="vehicle_type"
+          :vehicle_luggage="vehicle_luggage"
+          :vehicle_status="vehicle_status"
+        />
       </gmap-info-window>
       <GmapMarker
         :position="marker.position"
@@ -60,7 +66,8 @@ export default {
         { lat: -1.294048, lng: 36.776790 },
         { lat: -1.293973, lng: 36.779118 },
         { lat: -1.292622, lng: 36.779075 },
-        { lat: -1.291844, lng: 36.779049 }
+        { lat: -1.291844, lng: 36.779049 },
+        { lat: -1.300355, lng: 36.773850 }
       ],
       info_marker: null,
       info_window_open: true,
@@ -71,6 +78,13 @@ export default {
       i: 0,
       deltaLat: 0,
       deltaLng: 0,
+
+      // Vehicle information
+      vehicle_numberplate: "KAY·747E",
+      vehicle_tonnes: "27 Tonnes",
+      vehicle_type: "Flatbed",
+      vehicle_luggage: "Rice",
+      vehicle_status: "Heading to customer",
     };
   },
   methods: {
@@ -118,8 +132,26 @@ export default {
       this.transition(result);
     },
 
+    simulateCancellingOrder() {
+      var timeleft = 20;
+      var orderTimer = setInterval(() => {
+        if(timeleft <= 0){
+          clearInterval(orderTimer);
+          this.vehicle_status = "Cancelling order";
+        } else {
+          this.vehicle_status = "Contacting customer..." + timeleft + " sec";
+        }
+        timeleft -= 1;
+      }, 1000);
+    },
+
     refreshSimulation() {
       this.startLocation();
+      this.vehicle_numberplate = "KAY·747E";
+      this.vehicle_tonnes = "27 Tonnes";
+      this.vehicle_type = "Flatbed";
+      this.vehicle_luggage = "Rice";
+      this.vehicle_status = "Heading to customer";
     },
 
     transition(result) {
@@ -154,9 +186,11 @@ export default {
       console.log("Moving to : ", new_coords );
       this.panToMarker();
 
-      if(this.i != this.numDeltas){
+      if( this.i != this.numDeltas ){
         this.i++;
         setTimeout(this.moveMarker, this.delay);
+      }else {
+        this.simulateCancellingOrder();
       }
     }
   },
