@@ -34,14 +34,12 @@
                 >
                   <v-list-item-content>
                     <v-list-item-title>
-                      Simulate Driver A
+                      Simulate Scenario
                     </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
 
-                <v-divider class="my-2"></v-divider>
-
-                <v-list-item
+                <!-- <v-list-item
                   link
                   color="grey lighten-4"
                   @click="refreshSimulation"
@@ -51,7 +49,7 @@
                       Refresh
                     </v-list-item-title>
                   </v-list-item-content>
-                </v-list-item>
+                </v-list-item> -->
               </v-list>
             </v-sheet>
           </v-col>
@@ -86,10 +84,6 @@ export default {
     simulateDriverA() {
       this.$refs.homeRef.simulateDriverA();
     },
-
-    refreshSimulation() {
-      this.$refs.homeRef.refreshSimulation();
-    }
   }
 }
 </script>

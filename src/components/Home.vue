@@ -26,6 +26,7 @@
           :vehicle_type="vehicle_type"
           :vehicle_luggage="vehicle_luggage"
           :vehicle_status="vehicle_status"
+          :vehicle_dispatched="vehicle_dispatched"
         />
       </gmap-info-window>
       <GmapMarker
@@ -55,20 +56,35 @@ export default {
       mapOptions: {
         disableDefaultUI: true,
       },
-      driverA_coords: [
-        { lat: -1.298982, lng: 36.776811 },
-        { lat: -1.297459, lng: 36.776747 },
-        { lat: -1.296193, lng: 36.776726 },
-        { lat: -1.296097, lng: 36.779236 },
-        { lat: -1.296151, lng: 36.777637 },
-        { lat: -1.296215, lng: 36.776693 },
-        { lat: -1.294252, lng: 36.776586 },
-        { lat: -1.294048, lng: 36.776790 },
-        { lat: -1.293973, lng: 36.779118 },
-        { lat: -1.292622, lng: 36.779075 },
-        { lat: -1.291844, lng: 36.779049 },
-        { lat: -1.300355, lng: 36.773850 }
-      ],
+      driverA_details: {
+        vehicle_numberplate: "KAY·747E",
+        vehicle_tonnes: "27 Tonnes",
+        vehicle_type: "Flatbed",
+        vehicle_luggage: "Rice",
+        driverA_coords: [
+          { lat: -1.298982, lng: 36.776811 },
+          { lat: -1.297459, lng: 36.776747 },
+          { lat: -1.296193, lng: 36.776726 },
+          { lat: -1.296097, lng: 36.779236 },
+          { lat: -1.296151, lng: 36.777637 },
+          { lat: -1.296215, lng: 36.776693 },
+          { lat: -1.294252, lng: 36.776586 },
+          { lat: -1.294048, lng: 36.776790 },
+          { lat: -1.293973, lng: 36.779118 },
+          { lat: -1.292622, lng: 36.779075 },
+          { lat: -1.291844, lng: 36.779049 },
+          { lat: -1.300355, lng: 36.773850 }
+        ],
+      },
+      driverB_details: {
+        vehicle_numberplate: "KDC·512Q",
+        vehicle_tonnes: "12.5 Tonnes",
+        vehicle_type: "SCANIA Truck",
+        vehicle_luggage: "Electronics",
+        driverB_coords: [
+          { lat: -1.291879, lng: 36.778389 }
+        ],
+      },
       info_marker: null,
       info_window_open: true,
 
@@ -79,28 +95,32 @@ export default {
       deltaLat: 0,
       deltaLng: 0,
 
-      // Vehicle information
+      // Initial vehicle information
       vehicle_numberplate: "KAY·747E",
       vehicle_tonnes: "27 Tonnes",
       vehicle_type: "Flatbed",
       vehicle_luggage: "Rice",
       vehicle_status: "Heading to customer",
+      vehicle_dispatched: true,
+
+      // Running simulation
+      running_simulation: false
     };
   },
   methods: {
     //detects location from browser
     startLocation() {
       this.marker.position = {
-        lat: this.driverA_coords[0].lat,
-        lng: this.driverA_coords[0].lng,
+        lat: this.driverA_details.driverA_coords[0].lat,
+        lng: this.driverA_details.driverA_coords[0].lng,
       };
       this.infowindow = {
-        lat: this.driverA_coords[0].lat,
-        lng: this.driverA_coords[0].lng,
+        lat: this.driverA_details.driverA_coords[0].lat,
+        lng: this.driverA_details.driverA_coords[0].lng,
       }
       this.center = {
-        lat: this.driverA_coords[0].lat,
-        lng: this.driverA_coords[0].lng,
+        lat: this.driverA_details.driverA_coords[0].lat,
+        lng: this.driverA_details.driverA_coords[0].lng,
       },
       this.panToMarker();
     },
@@ -128,8 +148,12 @@ export default {
     },
 
     simulateDriverA() {
-      var result = this.driverA_coords[1];
-      this.transition(result);
+      if( this.running_simulation === false ) {
+        this.running_simulation = true;
+        this.refreshSimulation();
+        var result = this.driverA_details.driverA_coords[1];
+        this.transition(result);
+      }
     },
 
     simulateCancellingOrder() {
@@ -137,21 +161,54 @@ export default {
       var orderTimer = setInterval(() => {
         if(timeleft <= 0){
           clearInterval(orderTimer);
-          this.vehicle_status = "Cancelling order";
+          this.vehicle_status = "Cancelled order and finding new driver";
+          this.vehicle_dispatched = false;
+          setTimeout(this.simulateDriverB, 10000);
         } else {
-          this.vehicle_status = "Contacting customer..." + timeleft + " sec";
+          this.vehicle_status = "Contacting customer..." + timeleft + "sec";
         }
         timeleft -= 1;
       }, 1000);
     },
 
+    simulateDriverB() {
+      // Set coordinates to marker and info window
+      this.marker.position = {
+        lat: this.driverB_details.driverB_coords[0].lat,
+        lng: this.driverB_details.driverB_coords[0].lng,
+      };
+      this.infowindow = {
+        lat: this.driverB_details.driverB_coords[0].lat,
+        lng: this.driverB_details.driverB_coords[0].lng,
+      }
+      this.center = {
+        lat: this.driverB_details.driverB_coords[0].lat,
+        lng: this.driverB_details.driverB_coords[0].lng,
+      },
+      this.panToMarker();
+
+      // Set the info window information
+      this.vehicle_numberplate = this.driverB_details.vehicle_numberplate;
+      this.vehicle_tonnes = this.driverB_details.vehicle_tonnes;
+      this.vehicle_type = this.driverB_details.vehicle_type;
+      this.vehicle_luggage = this.driverB_details.vehicle_luggage;
+      this.vehicle_status = "Dispatched to new driver";
+      this.vehicle_dispatched = true;
+
+      // Set running simulation to false
+      this.running_simulation = false;
+    },
+
     refreshSimulation() {
       this.startLocation();
-      this.vehicle_numberplate = "KAY·747E";
-      this.vehicle_tonnes = "27 Tonnes";
-      this.vehicle_type = "Flatbed";
-      this.vehicle_luggage = "Rice";
+
+      // Set the info window information
+      this.vehicle_numberplate = this.driverA_details.vehicle_numberplate;
+      this.vehicle_tonnes = this.driverA_details.vehicle_tonnes;
+      this.vehicle_type = this.driverA_details.vehicle_type;
+      this.vehicle_luggage = this.driverA_details.vehicle_luggage;
       this.vehicle_status = "Heading to customer";
+      this.vehicle_dispatched = true;
     },
 
     transition(result) {

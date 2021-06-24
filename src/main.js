@@ -2,7 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import * as VueGoogleMaps from "vue2-google-maps";
 import vuetify from './plugins/vuetify'
-
+import VueSpinners from 'vue-spinners'
+ 
+Vue.use(VueSpinners);
 Vue.use(VueGoogleMaps, {
   load: {
     key: "AIzaSyA4flObfJL9BV2W__93h9rsnHhH3segtBA",
