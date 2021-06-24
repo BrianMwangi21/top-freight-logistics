@@ -76,7 +76,8 @@ export default {
   data() {
     return {
       links: [
-        'Dashboard'
+        'Dashboard',
+        'Tracking Page'
       ],
     }
   },
